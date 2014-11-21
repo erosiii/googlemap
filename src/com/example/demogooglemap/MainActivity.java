@@ -125,17 +125,27 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 
-				// Checks, whether start and end locations are captured
-
-				// LatLng origin = markerPoints.get(0);
-				// LatLng dest = markerPoints.get(1);
 				String namecemetery = autocomplete.getText().toString();
 				if (!namecemetery.equalsIgnoreCase("")) {
 
 					// find latitude and longitude in list
 					for (int i = 0; i < listcemetery.size(); i++) {
+
 						if (listcemetery.get(i).getName()
 								.equalsIgnoreCase(namecemetery)) {
+
+							// draw map again
+							map.clear();map.addMarker(new MarkerOptions()
+							.position(pointorigin)
+							.title("My Location")
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+							for (int j = 0; j < listcemetery.size(); j++) {
+								DrawOnmap(listcemetery.get(j).getLatLng(),
+										listcemetery.get(j).getName());
+							}
+
+							//draw line
 							pointdes = listcemetery.get(i).getLatLng();
 							// Getting URL to the Google Directions API
 							String url = getDirectionsUrl(pointorigin, pointdes);
@@ -182,14 +192,7 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			public void onInfoWindowClick(Marker marker) {
-				// pointdes = marker.getPosition();
-				// Cemetery cm = new Cemetery();
-				// cm.setLatLng(pointdes);
-				// cm.setName(marker.getTitle());
-				// listcemetery.add(cm);
 				autocomplete.setText(marker.getTitle());
-				// Log.e("vi do:", String.valueOf(pointdes.latitude));
-				// Log.e("kinh do:", String.valueOf(pointdes.longitude));
 			}
 		});
 
@@ -210,12 +213,16 @@ public class MainActivity extends ActionBarActivity {
 					-(location.getLatitude() - pointdes.latitude),
 					location.getLongitude() - pointdes.longitude));
 
+			Log.e("toa do", String.valueOf(location.getLatitude()) + "@"
+					+ String.valueOf(location.getLongitude()));
 			degree += 180;
+			
 			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
 					R.drawable.arrowdirection);
 			Matrix mtx = new Matrix();
-			mtx.postRotate(degree);
-
+			mtx.postRotate(360 - degree);
+			
+			Log.e("di chuyen", String.valueOf(degree));
 			Bitmap bm = Bitmap.createBitmap(bmp, 0, 0, 34, 50, mtx, true);
 
 			imv.setImageBitmap(bm);
@@ -280,23 +287,17 @@ public class MainActivity extends ActionBarActivity {
 								.getString("longitude")));
 
 				Log.e("ve point moi", "ok");
-				MarkerOptions options = new MarkerOptions();
-				options.position(latlong);
-				options.title(location.getString("name_cemetery"));
-				Bitmap bm = BitmapFactory.decodeResource(getResources(),
-						R.drawable.rip);
-				options.icon(BitmapDescriptorFactory.fromBitmap(bm));
-
-				map.addMarker(options).showInfoWindow();
-				// add name cemetery in listnamecemetery
 
 				String name = location.getString("name_cemetery");
+
 				Cemetery cm = new Cemetery();
 				cm.setLatLng(latlong);
 				cm.setName(name);
 				listcemetery.add(cm);
 				// add list name show autocomplete text
 				arr_name_cemetery.add(name);
+
+				DrawOnmap(latlong, name);
 			}
 
 		} catch (JSONException e) {
@@ -304,6 +305,17 @@ public class MainActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		ad.notifyDataSetChanged();
+	}
+
+	private void DrawOnmap(LatLng latlong, String namecemetery) {
+		MarkerOptions options = new MarkerOptions();
+		options.position(latlong);
+		options.title(namecemetery);
+		Bitmap bm = BitmapFactory
+				.decodeResource(getResources(), R.drawable.rip);
+		options.icon(BitmapDescriptorFactory.fromBitmap(bm));
+
+		map.addMarker(options).showInfoWindow();
 	}
 
 	protected void Getmylocation() {
