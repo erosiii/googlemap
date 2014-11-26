@@ -24,10 +24,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,10 +39,9 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.Bus.DirectionsJSONParser;
 import com.example.model.Cemetery;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -58,7 +58,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MainActivity extends ActionBarActivity {
 
-	private GoogleMap map;
+	public static GoogleMap map;
 	// private ArrayList<LatLng> Totalpoint;
 	private LatLng pointorigin = null;
 	private LatLng pointdes = null;
@@ -68,13 +68,13 @@ public class MainActivity extends ActionBarActivity {
 	private List<Cemetery> listcemetery;
 	private List<String> arr_name_cemetery;
 	private ArrayAdapter<String> ad;
-	ImageView imv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		View imv = (ImageView) findViewById(R.id.imageView1);
+		Intent intent = new Intent(MainActivity.this, FindActivity.class);
+		startActivity(intent);
 		autocomplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
 		arr_name_cemetery = new ArrayList<String>();
 		ad = new ArrayAdapter<String>(this,
@@ -104,6 +104,7 @@ public class MainActivity extends ActionBarActivity {
 				Log.e("kinh do", String.valueOf(point.longitude));
 			}
 		});
+
 		// Setting onclick event listener for the map
 
 		// The map will be cleared on long click
@@ -135,17 +136,28 @@ public class MainActivity extends ActionBarActivity {
 								.equalsIgnoreCase(namecemetery)) {
 
 							// draw map again
-							map.clear();map.addMarker(new MarkerOptions()
-							.position(pointorigin)
-							.title("My Location")
-							.icon(BitmapDescriptorFactory
-									.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+							map.clear();
+
+							// map.addMarker(new MarkerOptions()
+							// .position(pointorigin)
+							// .title("My Location")
+							// .icon(BitmapDescriptorFactory
+							// .defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+							map.addMarker(new MarkerOptions()
+									.position(pointorigin)
+									.title("My Location")
+									.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+											.decodeResource(getResources(),
+													R.drawable.arrowdirection))));
+
 							for (int j = 0; j < listcemetery.size(); j++) {
-								DrawOnmap(listcemetery.get(j).getLatLng(),
-										listcemetery.get(j).getName());
+								DrawCemeteryOnmap(listcemetery.get(j)
+										.getLatLng(), listcemetery.get(j)
+										.getName());
 							}
 
-							//draw line
+							// draw line
 							pointdes = listcemetery.get(i).getLatLng();
 							// Getting URL to the Google Directions API
 							String url = getDirectionsUrl(pointorigin, pointdes);
@@ -175,6 +187,8 @@ public class MainActivity extends ActionBarActivity {
 					public void onClick(View v) {
 						map.clear();
 						Getmylocation();
+						((Button) findViewById(R.id.btnmylocation))
+								.setEnabled(false);
 					}
 				});
 
@@ -209,23 +223,45 @@ public class MainActivity extends ActionBarActivity {
 
 	protected void Showarrow(Location location) {
 		if (pointdes != null) {
-			float degree = (float) Math.toDegrees(Math.atan2(
-					-(location.getLatitude() - pointdes.latitude),
-					location.getLongitude() - pointdes.longitude));
+			LatLng latlong = new LatLng(location.getLatitude(),
+					location.getLongitude());
 
-			Log.e("toa do", String.valueOf(location.getLatitude()) + "@"
-					+ String.valueOf(location.getLongitude()));
-			degree += 180;
-			
+			float degree = (float) Math.toDegrees(Math.atan2(
+					-(latlong.latitude - pointdes.latitude), latlong.longitude
+							- pointdes.longitude));
+
+			Log.e("toa do moi",
+					String.valueOf(latlong.latitude) + "@"
+							+ String.valueOf(latlong.longitude));
+
+			Log.e("toa do moc", String.valueOf(pointdes.latitude) + "@"
+					+ String.valueOf(pointdes.longitude));
+
+			Log.e("goc sau tinh", String.valueOf(degree));
+
+			// kiem tra xem vi tri dang đứng nằm bên trái hay phải
+			if (latlong.longitude > pointdes.longitude) {
+				degree = 180 + Math.abs(degree);
+			} else {
+				// degree = 180 - Math.abs(degree);
+				degree = Math.abs(degree);
+			}
+			Log.e("so do goc", String.valueOf(degree));
 			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
 					R.drawable.arrowdirection);
-			Matrix mtx = new Matrix();
-			mtx.postRotate(360 - degree);
-			
-			Log.e("di chuyen", String.valueOf(degree));
-			Bitmap bm = Bitmap.createBitmap(bmp, 0, 0, 34, 50, mtx, true);
+			// Matrix mtx = new Matrix();
+			// mtx.postRotate(degree);
 
-			imv.setImageBitmap(bm);
+			Bitmap bm = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
+			Canvas canvas = new Canvas(bm);
+			canvas.rotate(90, 25, 25);
+			canvas.drawBitmap(bmp, 0, 0, null);
+
+			// add marker
+			map.addMarker(new MarkerOptions().position(latlong)
+					.title("My Location")
+					.icon(BitmapDescriptorFactory.fromBitmap(bm)));
+			// map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong, 15));
 		}
 	}
 
@@ -297,7 +333,7 @@ public class MainActivity extends ActionBarActivity {
 				// add list name show autocomplete text
 				arr_name_cemetery.add(name);
 
-				DrawOnmap(latlong, name);
+				DrawCemeteryOnmap(latlong, name);
 			}
 
 		} catch (JSONException e) {
@@ -307,7 +343,7 @@ public class MainActivity extends ActionBarActivity {
 		ad.notifyDataSetChanged();
 	}
 
-	private void DrawOnmap(LatLng latlong, String namecemetery) {
+	private void DrawCemeteryOnmap(LatLng latlong, String namecemetery) {
 		MarkerOptions options = new MarkerOptions();
 		options.position(latlong);
 		options.title(namecemetery);
@@ -331,8 +367,10 @@ public class MainActivity extends ActionBarActivity {
 			map.addMarker(new MarkerOptions()
 					.position(latlong)
 					.title("My Location")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+					.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+							.decodeResource(getResources(),
+									R.drawable.arrowdirection))));
+
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong, 15));
 
 		} else {
@@ -417,6 +455,8 @@ public class MainActivity extends ActionBarActivity {
 		return data;
 	}
 
+	PolylineOptions lineOptions = null;
+
 	// Fetches data from url passed
 	private class DownloadTask extends AsyncTask<String, Void, String> {
 
@@ -493,7 +533,7 @@ public class MainActivity extends ActionBarActivity {
 		protected void onPostExecute(List<List<HashMap<String, String>>> result) {
 
 			ArrayList<LatLng> points = null;
-			PolylineOptions lineOptions = null;
+			lineOptions = null;
 
 			// Traversing through all the routes
 			for (int i = 0; i < result.size(); i++) {
