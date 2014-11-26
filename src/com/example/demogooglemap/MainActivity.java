@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -112,7 +113,7 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onMapLongClick(LatLng point) {
 				// Removes all the points from Google Map
-				map.clear();
+				//map.clear();
 
 				// Removes all the points in the ArrayList
 				listcemetery.clear();
@@ -160,16 +161,13 @@ public class MainActivity extends ActionBarActivity {
 					}
 
 				} else {
-					Toast.makeText(getApplicationContext(),
-							"No Destination Or Origin", Toast.LENGTH_SHORT)
-							.show();
+					Toast.makeText(getApplicationContext(), "No Destination Or Origin", Toast.LENGTH_SHORT).show();
 				}
 
 			}
 		});
 
-		findViewById(R.id.btnmylocation).setOnClickListener(
-				new OnClickListener() {
+		findViewById(R.id.btnmylocation).setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -182,6 +180,7 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
+				map.clear();
 				listcemetery.clear();
 				arr_name_cemetery.clear();
 				new getlocationasyn().execute();
@@ -201,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onMyLocationChange(Location location) {
 				// thuc hien xoay mui ten va load len map
-				Showarrow(location);
+				//Showarrow(location);
 			}
 		});
 
@@ -209,8 +208,7 @@ public class MainActivity extends ActionBarActivity {
 
 	protected void Showarrow(Location location) {
 		if (pointdes != null) {
-			float degree = (float) Math.toDegrees(Math.atan2(
-					-(location.getLatitude() - pointdes.latitude),
+			float degree = (float) Math.toDegrees(Math.atan2(-(location.getLatitude() - pointdes.latitude),
 					location.getLongitude() - pointdes.longitude));
 
 			Log.e("toa do", String.valueOf(location.getLatitude()) + "@"
@@ -248,11 +246,13 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	protected void Getlocationcemetery() {
-		String point = pointorigin.latitude + "@" + pointorigin.longitude;
+		String point = "";
+		try {
+			point = pointorigin.latitude + "@" + pointorigin.longitude;	
+		} catch (Exception e) {}		
 
 		HttpClient httpclient = new DefaultHttpClient();
-		String URL = "http://117.6.131.222:6789/pos/wspos/TAMLINH/"
-				+ "wsgetlocation.php";
+		String URL = "http://117.6.131.222:6789/pos/wspos/TAMLINH/"+ "wsgetlocation.php";
 
 		try {
 			HttpPost httppost = new HttpPost(URL);
@@ -267,10 +267,8 @@ public class MainActivity extends ActionBarActivity {
 			Log.e("dsfd", stringresponse);
 
 		} catch (Exception e) {
-			// e.printStackTrace();
 			Log.e("asdas", e.toString());
 		}
-
 	}
 
 	private void ParseJsonandloadmap(String json) {
@@ -281,27 +279,21 @@ public class MainActivity extends ActionBarActivity {
 			for (int i = 0; i < jsonlocation.length(); i++) {
 				JSONObject location = jsonlocation.getJSONObject(i);
 				LatLng latlong = new LatLng(
-						(double) Double.parseDouble(location
-								.getString("latitude")),
-						(double) Double.parseDouble(location
-								.getString("longitude")));
+						(double) Double.parseDouble(location.getString("latitude")),
+						(double) Double.parseDouble(location.getString("longitude")));
 
 				Log.e("ve point moi", "ok");
-
 				String name = location.getString("name_cemetery");
-
 				Cemetery cm = new Cemetery();
 				cm.setLatLng(latlong);
 				cm.setName(name);
 				listcemetery.add(cm);
 				// add list name show autocomplete text
 				arr_name_cemetery.add(name);
-
 				DrawOnmap(latlong, name);
 			}
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ad.notifyDataSetChanged();
@@ -311,10 +303,8 @@ public class MainActivity extends ActionBarActivity {
 		MarkerOptions options = new MarkerOptions();
 		options.position(latlong);
 		options.title(namecemetery);
-		Bitmap bm = BitmapFactory
-				.decodeResource(getResources(), R.drawable.rip);
+		Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.rip);
 		options.icon(BitmapDescriptorFactory.fromBitmap(bm));
-
 		map.addMarker(options).showInfoWindow();
 	}
 
@@ -331,8 +321,7 @@ public class MainActivity extends ActionBarActivity {
 			map.addMarker(new MarkerOptions()
 					.position(latlong)
 					.title("My Location")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong, 15));
 
 		} else {
@@ -519,12 +508,9 @@ public class MainActivity extends ActionBarActivity {
 				lineOptions.width(2);
 				lineOptions.color(Color.RED);
 			}
-
 			// Drawing polyline in the Google Map for the i-th route
-
 			map.addPolyline(lineOptions);
 		}
-
 	}
 
 	private String Getjsonfromweb(String url) {
