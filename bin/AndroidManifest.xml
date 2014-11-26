@@ -38,14 +38,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
         </activity>
+        <activity android:name=".FindActivity"></activity>
+        <activity android:name=".TombDetailActivity"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAO423uon3yXO03-miNFf3Nh1k3A28r6xQ" />
+            android:value="AIzaSyCJBsbyS5bW2l4eoIlm8IcaZrrYh-ljh6k" />
     </application>
 
 </manifest>
