@@ -34,13 +34,13 @@
                 <requestFocus />
             </EditText>
 
-            <EditText
-                android:id="@+id/edtquequan"
+            <AutoCompleteTextView
+                android:id="@+id/autoquanhuyen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Quê Quán" />
+                android:hint="Quê quán" />
         </LinearLayout>
 
         <LinearLayout
@@ -54,14 +54,13 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Tỉnh Thành" />
-
             <AutoCompleteTextView
-                android:id="@+id/autoquanhuyen"
+                android:id="@+id/autonghiatrang"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Quận Huyện" />
+                android:hint="Nghĩa Trang" />
 
             <AutoCompleteTextView
                 android:id="@+id/autothonxa"
@@ -69,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:visibility="gone"
                 android:hint="Thôn Xã" />
         </LinearLayout>
     </LinearLayout>

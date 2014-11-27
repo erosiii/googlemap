@@ -1479,7 +1479,8 @@ containing a value of this type.
         public static final int activity_chooser_view_content=0x7f090037;
         public static final int always=0x7f09000f;
         public static final int autoCompleteTextView1=0x7f09005f;
-        public static final int autoquanhuyen=0x7f090052;
+        public static final int autonghiatrang=0x7f090052;
+        public static final int autoquanhuyen=0x7f090050;
         public static final int autothonxa=0x7f090053;
         public static final int autotinhthanh=0x7f090051;
         public static final int beginning=0x7f090016;
@@ -1500,7 +1501,6 @@ containing a value of this type.
         public static final int disableHome=0x7f090009;
         public static final int dropdown=0x7f090015;
         public static final int edit_query=0x7f090042;
-        public static final int edtquequan=0x7f090050;
         public static final int edtten=0x7f09004f;
         public static final int end=0x7f090017;
         public static final int expand_activities_button=0x7f090038;
@@ -1799,6 +1799,7 @@ containing a value of this type.
         public static final int create_calendar_title=0x7f0a0011;
         public static final int decline=0x7f0a0010;
         public static final int hello_world=0x7f0a0031;
+        public static final int loading=0x7f0a0033;
         public static final int store_picture_message=0x7f0a000e;
         public static final int store_picture_title=0x7f0a000d;
         /**  Text on a placeholder buy button when Google Play services is not

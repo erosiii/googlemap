@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -35,23 +36,29 @@ public class GetMartyrsAsysn extends AsyncTask<String, Void, Void> {
 	private String provincename;
 	private String villagename;
 	private String name;
-	private String nativeland;
+	private ProgressDialog mProgress;
 
 	public GetMartyrsAsysn() {
 
 	}
 
-	public GetMartyrsAsysn(Context context, ListView lv, String provincename,
-			String districtname, String villagename, String nammemartyrs,
-			String nativeland) {
-		this.context = context;
+	public GetMartyrsAsysn(Context mcontext, ListView lv, String provincename,
+			String districtname, String villagename, String nammemartyrs) {
+		this.context = mcontext;
 		this.lv = lv;
 		listmartyrs = new ArrayList<Martyrs>();
 		this.districtname = districtname;
 		this.villagename = villagename;
 		this.provincename = provincename;
 		this.name = nammemartyrs;
-		this.nativeland = nativeland;
+		mProgress = new ProgressDialog(context);
+	}
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		mProgress.setMessage( context.getResources().getString(R.string.loading) );
+		mProgress.setCancelable(false);
+		mProgress.show();
 	}
 
 	@Override
@@ -64,7 +71,6 @@ public class GetMartyrsAsysn extends AsyncTask<String, Void, Void> {
 			object.put("district", districtname);
 			object.put("village", villagename);
 			object.put("name", name);
-			object.put("nativeland", nativeland);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,6 +83,8 @@ public class GetMartyrsAsysn extends AsyncTask<String, Void, Void> {
 	@Override
 	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
+		if (mProgress.isShowing())
+			mProgress.dismiss();
 		admartyrs = new MartyrsAdapter(context, R.layout.item_listview_layout,
 				listmartyrs);
 		lv.setAdapter(admartyrs);

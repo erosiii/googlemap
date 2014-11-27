@@ -1,5 +1,6 @@
 package com.example.demogooglemap;
 
+import com.example.Bus.GetAllCemeteryAsyn;
 import com.example.Bus.GetDistrictAsyn;
 import com.example.Bus.GetMartyrsAsysn;
 import com.example.Bus.GetProvinceAsyn;
@@ -24,7 +25,7 @@ public class FindActivity extends Activity {
 	private ListView lvmartyrs;
 	private AutoCompleteTextView autoprovince;
 	private AutoCompleteTextView autodistrict;
-	private AutoCompleteTextView autovillage;
+	private AutoCompleteTextView autovillage, autonghiatrang;
 	private static final String URL = "http://117.6.131.222:8888/Tamlinh/";
 
 	@Override
@@ -38,7 +39,6 @@ public class FindActivity extends Activity {
 
 	private void SetUI() {
 		edtnamemartyrs = (EditText) findViewById(R.id.edtten);
-		edtnativeland = (EditText) findViewById(R.id.edtquequan);
 		lvmartyrs = (ListView) findViewById(R.id.lvinfo);
 		btnfind = (Button) findViewById(R.id.btnfind);
 		autoprovince = (AutoCompleteTextView) findViewById(R.id.autotinhthanh);
@@ -50,6 +50,18 @@ public class FindActivity extends Activity {
 				String url = URL + "wsgetdistrict.php";
 				new GetDistrictAsyn(FindActivity.this, autodistrict,
 						autoprovince.getText().toString()).execute(url);
+			}
+		});
+		
+		autonghiatrang = (AutoCompleteTextView) findViewById(R.id.autonghiatrang);
+		autonghiatrang.setThreshold(1);
+		autonghiatrang.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				String url = URL + "wsgetallcemetery.php";
+				new GetAllCemeteryAsyn(FindActivity.this, autonghiatrang,
+						autonghiatrang.getText().toString()).execute(url);
 			}
 		});
 
@@ -72,7 +84,7 @@ public class FindActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				DoSearch();
+				doSearch();
 			}
 		});
 		
@@ -83,7 +95,7 @@ public class FindActivity extends Activity {
 		new GetProvinceAsyn(FindActivity.this, autoprovince).execute(url);
 	}
 
-	private void DoSearch() {
+	private void doSearch() {
 //		if (!edtnamemartyrs.getText().toString().equals("")
 //				&& !edtnativeland.getText().toString().equals("")) {
 			String url = URL + "wsgetinfomartyrs.php";
@@ -91,8 +103,7 @@ public class FindActivity extends Activity {
 				new GetMartyrsAsysn(FindActivity.this, lvmartyrs, autoprovince
 						.getText().toString(), autodistrict.getText().toString(),
 						autovillage.getText().toString(), edtnamemartyrs.getText()
-								.toString(), edtnativeland.getText().toString())
-						.execute(url);
+								.toString()).execute(url);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

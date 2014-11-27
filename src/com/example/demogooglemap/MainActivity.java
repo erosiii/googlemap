@@ -186,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
 						map.clear();
 						Getmylocation();
 						((Button) findViewById(R.id.btnmylocation))
-								.setEnabled(false);
+								.setEnabled(true);
 					}
 				});
 
