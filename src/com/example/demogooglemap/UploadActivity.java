@@ -13,16 +13,21 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.Bus.GetAndPostJson;
 import com.example.Bus.MultipartEntity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,13 +38,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class UploadActivity extends Activity {
+public class UploadActivity extends Activity implements
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private Button btnupload;
 	private ImageView imgcapture;
 	private String imagefilename, mCurrentPhotoPath;
 	private Bitmap imgbitmap;
-	Location location;
+	private LocationClient locationClient;
+	private Location mylocaLocation;
+	String URL = "http://117.6.131.222:6789/pos/wspos/TAMLINH/";
+	private LocationManager locationmanager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +58,20 @@ public class UploadActivity extends Activity {
 		SetUI();
 		SetData();
 	}
+
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		locationClient.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		locationClient.disconnect();
+		super.onStop();
+	}
+	
 
 	private void SetUI() {
 		btnupload = (Button) findViewById(R.id.btn_upload);
@@ -73,20 +97,44 @@ public class UploadActivity extends Activity {
 	}
 
 	private void SetData() {
-
+		locationClient = new LocationClient(this, this, this);
 	}
 
 	private void DoUpload() {
-		location = MainActivity.map.getMyLocation();
+		// MainActivity.map.getMyLocation();
 		// upload location to database
-		GetAndPostJson gap=new GetAndPostJson();
-		JSONObject object=new JSONObject();
-		try {
-			object.put("loaction", "");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		Location loca = locationmanager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//		Toast.makeText(getApplicationContext(), String.valueOf(loca.getLatitude()), Toast.LENGTH_SHORT).show();
+//		Toast.makeText(getApplicationContext(), String.valueOf(loca.getLongitude()), Toast.LENGTH_SHORT).show();
+
+
+		LocationListener locationListener = new MyLocation();
+		locationmanager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER, 5000, 10,
+				(android.location.LocationListener) locationListener);
+		
+		
+		
+		Log.e("vi tri",
+				String.valueOf(mylocaLocation.getLatitude() + "@"
+						+ mylocaLocation.getLongitude()));
+		GetAndPostJson gap = new GetAndPostJson();
+		JSONObject object = new JSONObject();
+		// try {
+		// object.put(
+		// "loaction",
+		// String.valueOf(location.getLatitude() + ","
+		// + location.getLongitude()));
+		//
+		// gap.PostAndGet2(URL + "wspostlocation.php", object, "location");
+		// } catch (JSONException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		// upload image to server
 		if (!imgbitmap.equals(null))
@@ -149,18 +197,12 @@ public class UploadActivity extends Activity {
 			Bitmap bitmap = bitmaps[0];
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // convert
-																		// Bitmap
-																		// to
-																		// ByteArrayOutputStream
-			InputStream in = new ByteArrayInputStream(stream.toByteArray()); // convert
-																				// ByteArrayOutputStream
-																				// to
-																				// ByteArrayInputStream
+
+			InputStream in = new ByteArrayInputStream(stream.toByteArray());
 
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			try {
-				HttpPost httppost = new HttpPost(
-						"http://117.6.131.222:6789/pos/wspos/DOTRACKING/savetofile.php"); // server
+				HttpPost httppost = new HttpPost(URL + "savetofile.php"); // server
 
 				MultipartEntity reqEntity = new MultipartEntity();
 				reqEntity.addPart("myFile", imagefilename, in);
@@ -218,5 +260,33 @@ public class UploadActivity extends Activity {
 		}
 
 	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		Toast.makeText(this, "Connectedfail", Toast.LENGTH_SHORT).show();
+
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(this, "disConnected", Toast.LENGTH_SHORT).show();
+
+	}
+	
+	
+	private class MyLocation implements LocationListener {
+
+		@Override
+		public void onLocationChanged(Location location) {
+			Toast.makeText(getApplicationContext(), "da doi", Toast.LENGTH_SHORT).show();
+			
+		}
+	}
+
 
 }

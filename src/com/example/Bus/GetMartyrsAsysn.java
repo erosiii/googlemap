@@ -70,7 +70,7 @@ public class GetMartyrsAsysn extends AsyncTask<String, Void, Void> {
 	@Override
 	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
-		admartyrs = new MartyrsAdapter(context, R.layout.item_listview_layout,
+		admartyrs = new MartyrsAdapter(context, R.layout.item_listview_martyrs_layout,
 				listmartyrs);
 		lv.setAdapter(admartyrs);
 	}

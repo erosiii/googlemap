@@ -58,8 +58,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MainActivity extends ActionBarActivity {
 
-	public static GoogleMap map;
-	// private ArrayList<LatLng> Totalpoint;
+	public GoogleMap map;
 	private LatLng pointorigin = null;
 	private LatLng pointdes = null;
 	private String datadistance;
@@ -73,7 +72,8 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Intent intent = new Intent(MainActivity.this, FindActivity.class);
+		Intent intent = new Intent(MainActivity.this,
+				UploadActivity.class);
 		startActivity(intent);
 		autocomplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
 		arr_name_cemetery = new ArrayList<String>();
@@ -152,13 +152,12 @@ public class MainActivity extends ActionBarActivity {
 													R.drawable.arrowdirection))));
 
 							for (int j = 0; j < listcemetery.size(); j++) {
-								DrawCemeteryOnmap(listcemetery.get(j)
-										.getLatLng(), listcemetery.get(j)
-										.getName());
+								DrawCemeteryOnmap(listcemetery.get(j).getGps(),
+										listcemetery.get(j).getName());
 							}
 
 							// draw line
-							pointdes = listcemetery.get(i).getLatLng();
+							pointdes = listcemetery.get(i).getGps();
 							// Getting URL to the Google Directions API
 							String url = getDirectionsUrl(pointorigin, pointdes);
 							Log.e("duong dan", url);
@@ -327,7 +326,7 @@ public class MainActivity extends ActionBarActivity {
 				String name = location.getString("name_cemetery");
 
 				Cemetery cm = new Cemetery();
-				cm.setLatLng(latlong);
+				cm.setGps(latlong);
 				cm.setName(name);
 				listcemetery.add(cm);
 				// add list name show autocomplete text

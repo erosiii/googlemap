@@ -26,7 +26,7 @@ public class MartyrsAdapter extends ArrayAdapter<Martyrs> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inlater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View item = inlater.inflate(R.layout.item_listview_layout, null);
+		View item = inlater.inflate(R.layout.item_listview_martyrs_layout, null);
 		Martyrs object = listmartyrs.get(position);
 		TextView tvname = (TextView) item.findViewById(R.id.tvten);
 		TextView tvyearofbirth = (TextView) item.findViewById(R.id.tvnamsinh);

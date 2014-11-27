@@ -1,7 +1,6 @@
 package com.example.Bus;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,7 +16,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -97,9 +95,9 @@ public class GetAndPostJson {
 			request.setEntity(se);
 			// Log.d("fuck", "fuck");
 			request.setHeader(namepost, json.toString());
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			//ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			//HttpResponse response = client.execute(request);
-			String res = client.execute(request,responseHandler);
+			//String res = client.execute(request,responseHandler);
 			HttpResponse response = client.execute(request);
 			HttpEntity entity = response.getEntity();
 			InputStream instream = entity.getContent();

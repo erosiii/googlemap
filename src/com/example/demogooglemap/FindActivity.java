@@ -4,10 +4,12 @@ import com.example.Bus.GetDistrictAsyn;
 import com.example.Bus.GetMartyrsAsysn;
 import com.example.Bus.GetProvinceAsyn;
 import com.example.Bus.GetVillageAsysn;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
@@ -24,13 +26,13 @@ public class FindActivity extends Activity {
 	private AutoCompleteTextView autoprovince;
 	private AutoCompleteTextView autodistrict;
 	private AutoCompleteTextView autovillage;
-	private static final String URL = "http://117.6.131.222:8888/Tamlinh/";
+	public static final String URL = "http://117.6.131.222:8888/Tamlinh/";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_find);
+		setContentView(R.layout.activity_find_martyrs);
 		SetUI();
 		SetData();
 	}
@@ -51,6 +53,13 @@ public class FindActivity extends Activity {
 						autoprovince.getText().toString()).execute(url);
 			}
 		});
+		autoprovince.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				autoprovince.showDropDown();
+			}
+		});
 
 		autodistrict = (AutoCompleteTextView) findViewById(R.id.autoquanhuyen);
 		autodistrict.setThreshold(0);
@@ -63,9 +72,23 @@ public class FindActivity extends Activity {
 						autodistrict.getText().toString()).execute(url);
 			}
 		});
+		autodistrict.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				autodistrict.showDropDown();
+			}
+		});
 
 		autovillage = (AutoCompleteTextView) findViewById(R.id.autothonxa);
 		autovillage.setThreshold(0);
+		autovillage.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				autovillage.showDropDown();
+			}
+		});
 
 		btnfind.setOnClickListener(new OnClickListener() {
 

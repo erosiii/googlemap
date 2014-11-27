@@ -5,7 +5,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.example.demogooglemap.R;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
