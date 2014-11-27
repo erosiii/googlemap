@@ -33,7 +33,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class UploadActivity extends Activity {
@@ -42,9 +44,12 @@ public class UploadActivity extends Activity {
 	private ImageView imgcapture;
 	private String imagefilename, mCurrentPhotoPath;
 	private Bitmap imgbitmap;
-	private Location mylocaLocation;
-	String URL = "http://117.6.131.222:6789/pos/wspos/TAMLINH/";
+	private EditText edtname;
+	private EditText edtnativeland;
+	private EditText edtyear;
+	String URL = "http://117.6.131.222:8888/nghiatrangtt/Tamlinh/";
 	JSONObject object = new JSONObject();
+	GetAndPostJson gap = new GetAndPostJson();
 	private LocationManager locationmanager;
 
 	@Override
@@ -58,6 +63,9 @@ public class UploadActivity extends Activity {
 	private void SetUI() {
 		btnupload = (Button) findViewById(R.id.btn_upload);
 		imgcapture = (ImageView) findViewById(R.id.imgcapture);
+		edtname = (EditText) findViewById(R.id.edthotenupload);
+		edtnativeland = (EditText) findViewById(R.id.edtquequanupload);
+		edtyear = (EditText) findViewById(R.id.edtnamsinhupload);
 		btnupload.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -87,39 +95,35 @@ public class UploadActivity extends Activity {
 	private void DoUpload() {
 		Location location = locationmanager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Toast.makeText(getApplicationContext(),
-				String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT)
-				.show();
-		Toast.makeText(getApplicationContext(),
-				String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT)
-				.show();
+		// Toast.makeText(getApplicationContext(),
+		// String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT)
+		// .show();
+		// Toast.makeText(getApplicationContext(),
+		// String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT)
+		// .show();
 
-		final GetAndPostJson gap = new GetAndPostJson();
-		
+		String name = edtname.getText().toString();
+		String naviteland = edtnativeland.getText().toString();
+		String year = edtyear.getText().toString();
+
 		try {
 			object.put(
 					"location",
 					String.valueOf(location.getLatitude() + ","
 							+ location.getLongitude()));
+			object.put("name", name);
+			object.put("nativeland", naviteland);
+			object.put("year", year);
+			object.put("image", imagefilename);
 
-			Thread th=new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					gap.PostAndGet2(URL + "wspostlocation.php", object, "location");
-				}
-			});
-			th.start();
-			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		// upload image to server
-		// if (!imgbitmap.equals(null))
-		// new MyUploadTask().execute(imgbitmap);
+		if (!imgbitmap.equals(null))
+			new MyUploadTask().execute(imgbitmap);
 	}
 
 	@Override
@@ -174,6 +178,8 @@ public class UploadActivity extends Activity {
 			if (bitmaps[0] == null)
 				return null;
 			setProgress(0);
+			// upload info martyrs
+			gap.PostAndGet2(URL + "wspostlocation.php", object, "location");
 
 			Bitmap bitmap = bitmaps[0];
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();

@@ -452,7 +452,6 @@ int id TableRow09 0x7f080057
 int id TableRow10 0x7f080054
 int id TableRow11 0x7f080052
 int id TextView01 0x7f080064
-int id TextView02 0x7f08008c
 int id TextView03 0x7f08005b
 int id TextView06 0x7f080058
 int id TextView08 0x7f080055
@@ -499,10 +498,11 @@ int id dialog 0x7f080021
 int id disableHome 0x7f08001b
 int id dropdown 0x7f080022
 int id edit_query 0x7f080046
-int id edthoten 0x7f08008d
+int id edthotenupload 0x7f08008c
 int id edtnamecemetery 0x7f080081
-int id edtnamsinh 0x7f08008e
+int id edtnamsinhupload 0x7f08008e
 int id edtquequan 0x7f080076
+int id edtquequanupload 0x7f08008d
 int id edtten 0x7f080075
 int id end 0x7f080025
 int id expand_activities_button 0x7f080035

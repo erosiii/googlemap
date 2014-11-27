@@ -2045,7 +2045,6 @@ containing a value of this type.
         public static final int TableRow10=0x7f080054;
         public static final int TableRow11=0x7f080052;
         public static final int TextView01=0x7f080064;
-        public static final int TextView02=0x7f08008c;
         public static final int TextView03=0x7f08005b;
         public static final int TextView06=0x7f080058;
         public static final int TextView08=0x7f080055;
@@ -2092,10 +2091,11 @@ containing a value of this type.
         public static final int disableHome=0x7f08001b;
         public static final int dropdown=0x7f080022;
         public static final int edit_query=0x7f080046;
-        public static final int edthoten=0x7f08008d;
+        public static final int edthotenupload=0x7f08008c;
         public static final int edtnamecemetery=0x7f080081;
-        public static final int edtnamsinh=0x7f08008e;
+        public static final int edtnamsinhupload=0x7f08008e;
         public static final int edtquequan=0x7f080076;
+        public static final int edtquequanupload=0x7f08008d;
         public static final int edtten=0x7f080075;
         public static final int end=0x7f080025;
         public static final int expand_activities_button=0x7f080035;
