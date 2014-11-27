@@ -26,7 +26,7 @@ public class FindActivity extends Activity {
 	private AutoCompleteTextView autoprovince;
 	private AutoCompleteTextView autodistrict;
 	private AutoCompleteTextView autovillage;
-	public static final String URL = "http://117.6.131.222:8888/Tamlinh/";
+	public static final String URL = "http://117.6.131.222:8888/nghiatrangtt/Tamlinh/";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

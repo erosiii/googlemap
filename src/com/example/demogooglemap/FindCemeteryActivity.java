@@ -26,7 +26,7 @@ public class FindCemeteryActivity extends Activity {
 	private AutoCompleteTextView autodistrict;
 	private Button btnfindcemetery;
 	private ListView lvcemetery;
-	public static final String URL = "http://117.6.131.222:8888/Tamlinh/";
+	public static final String URL = "http://117.6.131.222:8888/nghiatrangtt/Tamlinh/";
 	public static Cemetery ce;
 
 	@Override

@@ -95,9 +95,10 @@ public class GetAndPostJson {
 			request.setEntity(se);
 			// Log.d("fuck", "fuck");
 			request.setHeader(namepost, json.toString());
-			//ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			//HttpResponse response = client.execute(request);
-			//String res = client.execute(request,responseHandler);
+			// ResponseHandler<String> responseHandler = new
+			// BasicResponseHandler();
+			// HttpResponse response = client.execute(request);
+			// String res = client.execute(request,responseHandler);
 			HttpResponse response = client.execute(request);
 			HttpEntity entity = response.getEntity();
 			InputStream instream = entity.getContent();
@@ -119,6 +120,7 @@ public class GetAndPostJson {
 			Log.e("dta", datajson);
 			return datajson;
 		} catch (Exception t) {
+			Log.e("loi ay", t.toString());
 		}
 		return datajson;
 	}

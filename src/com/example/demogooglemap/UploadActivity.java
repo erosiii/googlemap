@@ -13,20 +13,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.Bus.GetAndPostJson;
 import com.example.Bus.MultipartEntity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,17 +36,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class UploadActivity extends Activity implements
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
+public class UploadActivity extends Activity {
 
 	private Button btnupload;
 	private ImageView imgcapture;
 	private String imagefilename, mCurrentPhotoPath;
 	private Bitmap imgbitmap;
-	private LocationClient locationClient;
 	private Location mylocaLocation;
 	String URL = "http://117.6.131.222:6789/pos/wspos/TAMLINH/";
+	JSONObject object = new JSONObject();
 	private LocationManager locationmanager;
 
 	@Override
@@ -58,20 +54,6 @@ public class UploadActivity extends Activity implements
 		SetUI();
 		SetData();
 	}
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-		locationClient.connect();
-	}
-
-	@Override
-	protected void onStop() {
-		locationClient.disconnect();
-		super.onStop();
-	}
-	
 
 	private void SetUI() {
 		btnupload = (Button) findViewById(R.id.btn_upload);
@@ -97,48 +79,47 @@ public class UploadActivity extends Activity implements
 	}
 
 	private void SetData() {
-		locationClient = new LocationClient(this, this, this);
+		locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				1000, 0, new MyLocationListener());
 	}
 
 	private void DoUpload() {
-		// MainActivity.map.getMyLocation();
-		// upload location to database
-		
-		locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-		Location loca = locationmanager
+		Location location = locationmanager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//		Toast.makeText(getApplicationContext(), String.valueOf(loca.getLatitude()), Toast.LENGTH_SHORT).show();
-//		Toast.makeText(getApplicationContext(), String.valueOf(loca.getLongitude()), Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(),
+				String.valueOf(location.getLatitude()), Toast.LENGTH_SHORT)
+				.show();
+		Toast.makeText(getApplicationContext(),
+				String.valueOf(location.getLongitude()), Toast.LENGTH_SHORT)
+				.show();
 
+		final GetAndPostJson gap = new GetAndPostJson();
+		
+		try {
+			object.put(
+					"location",
+					String.valueOf(location.getLatitude() + ","
+							+ location.getLongitude()));
 
-		LocationListener locationListener = new MyLocation();
-		locationmanager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 5000, 10,
-				(android.location.LocationListener) locationListener);
-		
-		
-		
-		Log.e("vi tri",
-				String.valueOf(mylocaLocation.getLatitude() + "@"
-						+ mylocaLocation.getLongitude()));
-		GetAndPostJson gap = new GetAndPostJson();
-		JSONObject object = new JSONObject();
-		// try {
-		// object.put(
-		// "loaction",
-		// String.valueOf(location.getLatitude() + ","
-		// + location.getLongitude()));
-		//
-		// gap.PostAndGet2(URL + "wspostlocation.php", object, "location");
-		// } catch (JSONException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+			Thread th=new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					gap.PostAndGet2(URL + "wspostlocation.php", object, "location");
+				}
+			});
+			th.start();
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// upload image to server
-		if (!imgbitmap.equals(null))
-			new MyUploadTask().execute(imgbitmap);
+		// if (!imgbitmap.equals(null))
+		// new MyUploadTask().execute(imgbitmap);
 	}
 
 	@Override
@@ -261,32 +242,33 @@ public class UploadActivity extends Activity implements
 
 	}
 
-	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		Toast.makeText(this, "Connectedfail", Toast.LENGTH_SHORT).show();
+	private class MyLocationListener implements LocationListener {
 
-	}
-
-	@Override
-	public void onConnected(Bundle connectionHint) {
-		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onDisconnected() {
-		Toast.makeText(this, "disConnected", Toast.LENGTH_SHORT).show();
-
-	}
-	
-	
-	private class MyLocation implements LocationListener {
-
-		@Override
 		public void onLocationChanged(Location location) {
-			Toast.makeText(getApplicationContext(), "da doi", Toast.LENGTH_SHORT).show();
-			
+			// String message = String.format(
+			// "New Location \n Longitude: %1$s \n Latitude: %2$s",
+			// location.getLongitude(), location.getLatitude()
+			// );
+			// Toast.makeText(UploadActivity.this, message,
+			// Toast.LENGTH_LONG).show();
 		}
+
+		public void onStatusChanged(String s, int i, Bundle b) {
+			// Toast.makeText(UploadActivity.this, "Provider status changed",
+			// Toast.LENGTH_LONG).show();
+		}
+
+		public void onProviderDisabled(String s) {
+			// Toast.makeText(UploadActivity.this,
+			// "Provider disabled by the user. GPS turned off",
+			// Toast.LENGTH_LONG).show();
+		}
+
+		public void onProviderEnabled(String s) {
+			// Toast.makeText(UploadActivity.this,
+			// "Provider enabled by the user. GPS turned on",
+			// Toast.LENGTH_LONG).show();
+		}
+
 	}
-
-
 }
